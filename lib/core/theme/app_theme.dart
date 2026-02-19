@@ -8,11 +8,6 @@ class AppTheme {
 
     scaffoldBackgroundColor: AppColors.backgroundPrimary,
 
-    colorScheme: const ColorScheme.dark().copyWith(
-      primary: AppColors.buttonPrimary,
-      surface: AppColors.backgroundSecondary,
-    ),
-
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.backgroundPrimary,
       elevation: 0,

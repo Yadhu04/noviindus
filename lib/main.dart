@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noviindus/core/theme/app_theme.dart';
-import 'package:noviindus/presentation/screens/login_screen.dart';
+import 'package:noviindus/presentation/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.dark,
-        home: LoginScreen(),
+        home: HomeScreen(),
       ),
     );
   }
