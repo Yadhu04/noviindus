@@ -2,12 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:noviindus/core/theme/app_colours.dart';
 import 'package:noviindus/core/theme/app_text_style.dart';
+import 'package:noviindus/presentation/providers/auth_provider.dart';
+import 'package:noviindus/presentation/screens/home_screen.dart';
+import 'package:provider/provider.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final phoneController = TextEditingController();
+  String countryCode = "+91";
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    final phone = phoneController.text.trim();
+
+    if (phone.isEmpty || phone.length < 10) {
+      _showError("Enter valid phone number");
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+
+    try {
+      print("Logging in with phone: $countryCode$phone");
+      await authProvider.login(phone);
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen()),
+      );
+    } catch (e) {
+      _showError(e.toString());
+    }
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -49,7 +95,11 @@ class LoginScreen extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                    onChanged: (_) {},
+                    onChanged: (v) {
+                      if (v != null) {
+                        setState(() => countryCode = v);
+                      }
+                    },
                     underline: SizedBox(),
                     dropdownColor: Colors.grey[900],
                     iconEnabledColor: Colors.white,
@@ -58,6 +108,7 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(width: 16),
                 Expanded(
                   child: TextField(
+                    controller: phoneController,
                     style: TextStyle(color: Colors.white),
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
@@ -80,7 +131,7 @@ class LoginScreen extends StatelessWidget {
             Expanded(child: SizedBox(height: 80)),
 
             ElevatedButton(
-              onPressed: () {},
+              onPressed: auth.loading ? null : _login,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundSecondary,
                 minimumSize: Size(0, 0),
